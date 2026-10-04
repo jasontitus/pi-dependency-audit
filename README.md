@@ -1,6 +1,6 @@
 # pi-dependency-audit
 
-A Python CLI that runs [pi-review-bot](../pi-review-bot) over a portfolio of GitHub dependencies, then ranks the issues worth investigating. Use it to audit the exact versions you depend on, understand gaps in the review, and prepare fixes with evidence.
+A Python CLI that runs [pi-review-bot](https://github.com/jasontitus/pi-review-bot) over a portfolio of GitHub dependencies, then ranks the issues worth investigating. Use it to audit the exact versions you depend on, understand gaps in the review, and prepare fixes with evidence.
 
 Each repository is cloned and pinned to a commit. Reviews run sequentially by default, through a rolling pool with `--jobs N`, or in fixed waves with `--batch-size N`. Optional portfolio synthesis assesses every parsed finding from security, data safety, performance, availability, and correctness perspectives. Selected findings can be handed to a separate fix checkout to produce a patch and verification logs.
 
