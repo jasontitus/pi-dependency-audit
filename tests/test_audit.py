@@ -28,7 +28,12 @@ mode=sys.argv[1]; repo=Path(sys.argv[2]); source=(repo/'source.py').read_text()
 focus=sys.argv[sys.argv.index('--focus')+1] if '--focus' in sys.argv else None
 mode=focus or mode
 with open(os.environ['FIXTURE_EVENTS'],'a') as h: h.write(json.dumps({'kind':'start','repo':repo.name,'mode':mode,'at':time.time()})+'\n')
-time.sleep(float(os.environ.get('FIXTURE_SLEEP','0')) + (0.8 if 'SLOW' in source else 0))
+time.sleep(float(os.environ.get('FIXTURE_SLEEP','0')))
+if 'WAIT_FOR_NEXT' in source:
+    gate = Path(os.environ['FIXTURE_GATE']); deadline = time.monotonic() + 15
+    while not gate.exists() and time.monotonic() < deadline: time.sleep(.01)
+    assert gate.exists(), 'Rolling pool never started the next repository'
+if 'SIGNAL_NEXT' in source: Path(os.environ['FIXTURE_GATE']).touch()
 if 'FAIL' in source: sys.exit(17)
 if 'NO_REPORT' not in source:
     date=os.environ['PI_REVIEW_DATE']; prefix={'bug':'','perf':'PERF_','security':'SECURITY_','data-safety':'DATA_SAFETY_','ultra':'ULTRA_'}[mode]
@@ -183,8 +188,8 @@ class AuditTests(unittest.TestCase):
         self.assertGreater(starts[2]["at"], max(ends[starts[0]["repo"]], ends[starts[1]["repo"]]))
 
     def test_rolling_pool_starts_next_before_slow_peer_finishes(self):
-        repos = [self.repo("slow", "SLOW RISK\n"), self.repo("fast"), self.repo("next")]
-        with patch.dict(os.environ, {"FIXTURE_SLEEP": "0.15"}):
+        repos = [self.repo("slow", "WAIT_FOR_NEXT RISK\n"), self.repo("fast"), self.repo("next", "SIGNAL_NEXT RISK\n")]
+        with patch.dict(os.environ, {"FIXTURE_SLEEP": "0.15", "FIXTURE_GATE": str(self.root / "gate")}):
             self.assertEqual(self.call(*self.run_args(repos), "--jobs", "2"), 0)
         events = self.events_list()
         starts = {e["repo"]: e["at"] for e in events if e["kind"] == "start"}

@@ -182,6 +182,16 @@ python3 -m unittest discover -s tests -v
 
 Tests use real temporary Git repositories and fake fleet/Pi/box adapters, with no model charges or external GitHub access. They exercise pinned revisions, resume, batching, coverage, timeouts, failed/missing reports, strict synthesis accounting, and fix patches/independent check execution. Fake box tests do not certify the real pi-box sandbox or provider integration.
 
+To exercise the actual bot launchers, transport, union merge, and sandbox with a local mock model endpoint:
+
+```sh
+PI_AUDIT_INTEGRATION_BOT=../pi-review-bot python3 -m unittest discover -s tests -v
+```
+
+This opt-in integration checks two repositories in parallel through `bug`, `security`, `data-safety`, and `perf`; report and coverage ingestion; resume without repeated model requests; portfolio synthesis; fix patches; passing and failing verification commands; and pi-box's Flutter Dart shim. Pi/model answers are deterministic stubs, so it checks orchestration rather than review quality, without hosted model charges. It requires localhost access and permission to launch the sandbox.
+
+Compatibility was checked against pi-review-bot commit `c6e992e` (2026-10-04). Its available-reviewer selection and Pi/Node fallback preserve the explicit model and branch arguments used here. The CLI continues to use pi-fleet's presets unless `--models` overrides them; plain pi-review's automatic local reviewer choice does not replace fleet presets. The Dart shim benefits boxed Dart verification by calling the SDK executable directly. After bot changes, start a new audit workspace if the saved configuration fingerprint differs.
+
 ## Follow-up work
 
 - Add dependency/advisory and SBOM input alongside source review, with explicit version matching.
