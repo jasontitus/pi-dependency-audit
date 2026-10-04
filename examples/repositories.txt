@@ -1,0 +1,3 @@
+# Replace these illustrative entries with your dependencies.
+owner/tool-a@v1.2.3
+https://github.com/owner/tool-b.git

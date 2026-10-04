@@ -1,0 +1,12 @@
+# Replace these illustrative repository names/tags with your dependencies.
+[[repositories]]
+repo = "owner/tool-a"
+ref = "v1.2.3"
+usage = "Parses untrusted uploads and writes customer data"
+criticality = "critical"
+
+[[repositories]]
+repo = "owner/tool-b"
+ref = "main"
+usage = "Offline CI build tool"
+criticality = "normal"

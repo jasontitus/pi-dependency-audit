@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+"""Run directly from a checkout without installing the package."""
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
+from pi_dependency_audit.cli import main
+
+raise SystemExit(main())
+
